@@ -10,7 +10,7 @@ app.use(cors());
 
 app.get('/', (req, res) => {
     // throw new Error('testing sentry');
-    res.status(200).json({msg: 'Hello World'});
+    res.status(200).json({msg: 'Hello world from Engaged!'});
 })
 
 app.use(Sentry.Handlers.errorHandler());
