@@ -2,7 +2,8 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const Sentry = require('@sentry/node');
-const bodyParser = require('body-parser')
+// dotenv required to use environment variables
+require('dotenv').config();
 
 // Sentry 
 Sentry.init({dsn: "https://3609947d29744121845b0f85c5a23100@o1368148.ingest.sentry.io/6670539"});
@@ -10,7 +11,7 @@ app.use(Sentry.Handlers.requestHandler());
 
 // Middleware
 app.use(cors());
-app.use(bodyParser.json());
+app.use(express.json());
 
 app.get('/', (req, res, next) => {
     // throw new Error('testing sentry');
@@ -19,6 +20,11 @@ app.get('/', (req, res, next) => {
 
 app.post('/', (req, res, next) => {
   res.status(200).json({requestBody: req.body.message})
+})
+
+app.use((req, res, next) => {
+  // middleware for unsupported routes
+  res.status(404).json({msg: 'Route Not Found!'})
 })
 
 app.use(Sentry.Handlers.errorHandler());
