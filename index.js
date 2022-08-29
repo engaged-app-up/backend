@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 const Sentry = require('@sentry/node');
+const userRoutes = require('./routes/user-routes');
 // dotenv required to use environment variables
 require('dotenv').config();
 
@@ -13,14 +14,8 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(cors());
 app.use(express.json());
 
-app.get('/', (req, res, next) => {
-    // throw new Error('testing sentry');
-    res.status(200).json({msg: 'Hello world from Engaged!'});
-})
-
-app.post('/', (req, res, next) => {
-  res.status(200).json({requestBody: req.body.message})
-})
+// user routes ex: localhost/api/users
+app.use('/api/users', userRoutes);
 
 app.use((req, res, next) => {
   // middleware for unsupported routes
