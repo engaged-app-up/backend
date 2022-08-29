@@ -3,11 +3,12 @@ const cors = require('cors');
 const app = express();
 const Sentry = require('@sentry/node');
 const userRoutes = require('./routes/user-routes');
+const prisma = require('./db/prisma');
 // dotenv required to use environment variables
 require('dotenv').config();
 
 // Sentry 
-Sentry.init({dsn: "https://3609947d29744121845b0f85c5a23100@o1368148.ingest.sentry.io/6670539"});
+Sentry.init({ dsn: "https://3609947d29744121845b0f85c5a23100@o1368148.ingest.sentry.io/6670539" });
 app.use(Sentry.Handlers.requestHandler());
 
 // Middleware
@@ -19,12 +20,22 @@ app.use('/api/users', userRoutes);
 
 app.use((req, res, next) => {
   // middleware for unsupported routes
-  res.status(404).json({msg: 'Route Not Found!'})
+  res.status(404).json({ msg: 'Route Not Found!' })
+})
+
+app.use((err, req, res, next) => {
+  res.json({error: `${err.message} ${err.statusCode}`})
 })
 
 app.use(Sentry.Handlers.errorHandler());
 
-const port = 3001
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+prisma.$connect()
+.then(() => {
+  const port = process.env.PORT || 3001;
+  app.listen(port, () => {
+    console.log(`Running on port ${port}`);
+  })
+})
+.catch(err => {
+  console.log(err);
 })
