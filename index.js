@@ -4,6 +4,7 @@ const app = express();
 const Sentry = require('@sentry/node');
 const userRoutes = require('./routes/user-routes');
 const prisma = require('./db/prisma');
+const io = require('socket.io')(3001);
 // dotenv required to use environment variables
 require('dotenv').config();
 
@@ -38,4 +39,10 @@ prisma.$connect()
 })
 .catch(err => {
   console.log(err);
+})
+
+// socket io
+
+io.on("connection", socket => {
+  console.log(socket.id)
 })
