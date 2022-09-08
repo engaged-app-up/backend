@@ -4,7 +4,6 @@ const app = express();
 const Sentry = require("@sentry/node");
 const userRoutes = require("./routes/user-routes");
 const prisma = require("./db/prisma");
-
 const http = require("http");
 const server = http.createServer(app);
 
