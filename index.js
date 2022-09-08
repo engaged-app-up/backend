@@ -18,11 +18,13 @@ app.use(express.json());
 // user routes ex: localhost/api/users
 app.use('/api/users', userRoutes);
 
+
 app.use((req, res, next) => {
   // middleware for unsupported routes
   res.status(404).json({ msg: 'Route Not Found!' })
 })
 
+//error handler
 app.use((err, req, res, next) => {
   res.json({error: `${err.message}`, statusCode: `${err.statusCode}`});
 })

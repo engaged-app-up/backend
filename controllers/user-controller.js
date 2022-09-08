@@ -18,7 +18,6 @@ const createUser = async (req, res, next) => {
     })
     .then(user => res.json(user))
     .catch(err => {
-        console.log(err);
         next(new HttpError('Failed to create user.', 500));
     });
 }

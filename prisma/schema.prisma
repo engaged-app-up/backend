@@ -10,6 +10,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Room {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String
+  description String
+  creator User @relation(name: "roomCreator", fields: [creatorId], references: [id])
+  creatorId String @db.ObjectId
+  members User[] @relation(name: "roomMembers", fields: [memberIds], references: [id])
+  memberIds String[] @db.ObjectId
+}
+
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
   uid String
@@ -17,4 +27,7 @@ model User {
   email String @unique
   name String
   role String @default("user")
+  ownedRooms Room[] @relation(name: "roomCreator")
+  roomIds String[] @db.ObjectId
+  rooms Room[] @relation(name: "roomMembers", fields: [roomIds], references: [id])
 }
