@@ -26,7 +26,6 @@ app.use(express.json());
 // user routes ex: localhost/api/users
 app.use("/api/users", userRoutes);
 
-
 app.use((req, res, next) => {
   // middleware for unsupported routes
   res.status(404).json({ msg: "Route Not Found!" });
@@ -63,7 +62,7 @@ const io = require("socket.io")(server, {
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
   socket.on("send_message", (data) => {
-    socket.broadcast.emit("recieve_message", data);
+    socket.broadcast.emit("receive_message", data);
     console.log(data);
   });
 });
