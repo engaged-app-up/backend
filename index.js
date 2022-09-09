@@ -6,6 +6,9 @@ const userRoutes = require("./routes/user-routes");
 const prisma = require("./db/prisma");
 const http = require("http");
 const server = http.createServer(app);
+const admin = require('./util/firebase-admin');
+const {getAuth} = require('firebase-admin/auth');
+
 
 // dotenv required to use environment variables
 require("dotenv").config();
