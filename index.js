@@ -9,6 +9,15 @@ const server = http.createServer(app);
 const admin = require('./util/firebase-admin');
 const {getAuth} = require('firebase-admin/auth');
 
+const getUser = async () => {
+  //firebase admin sdk is working! getting a user.
+  const user = await getAuth().getUserByEmail('imwaynebailey@gmail.com');
+  console.log(user.uid);
+}
+
+// getUser();
+
+
 
 // dotenv required to use environment variables
 require("dotenv").config();

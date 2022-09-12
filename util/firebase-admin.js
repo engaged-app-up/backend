@@ -12,7 +12,9 @@ const serviceAccount = {
     "client_x509_cert_url": process.env.FIREBASE_CLIENT_X509_CERT_URL
   }
 
-const firebaseAdmin = initializeApp({cert: serviceAccount})
+const firebaseAdmin = initializeApp({
+  credential: cert(serviceAccount)
+})
 
 module.exports = firebaseAdmin;
 
