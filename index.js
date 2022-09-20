@@ -1,3 +1,5 @@
+// dotenv required to use environment variables
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const app = express();
@@ -17,10 +19,6 @@ const getUser = async () => {
 
 // getUser();
 
-
-
-// dotenv required to use environment variables
-require("dotenv").config();
 
 // Sentry
 Sentry.init({
