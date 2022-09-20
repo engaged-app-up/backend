@@ -3,6 +3,7 @@ const HttpError = require('../util/http-error');
 const {getAuth} = require('firebase-admin/auth');
 
 const getUsers = async (req, res, next) => {
+    const uid = req.headers.uid; //uid of user that submitted request! Auth works! see fbAuth middleware.
     const allUsers = await prisma.user.findMany();
     res.json(allUsers);
 };
