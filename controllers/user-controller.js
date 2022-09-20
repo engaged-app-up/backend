@@ -34,17 +34,6 @@ const createUser = async (req, res, next) => {
     } catch (error) {
         next(new HttpError(error.message, 500))
     }
-    // const user = await prisma.user.create({
-    //     data: {
-    //         uid,
-    //         displayName,
-    //         email,
-    //     }
-    // })
-    //     .then(user => res.json(user))
-    //     .catch(err => {
-    //         next(new HttpError('Failed to create user.', 500));
-    //     });
 }
 
 

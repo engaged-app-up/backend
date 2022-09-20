@@ -5,6 +5,7 @@ const cors = require("cors");
 const app = express();
 const Sentry = require("@sentry/node");
 const userRoutes = require("./routes/user-routes");
+const roomRoutes = require("./routes/room-routes");
 const prisma = require("./db/prisma");
 const http = require("http");
 const server = http.createServer(app);
@@ -32,6 +33,8 @@ app.use(express.json());
 
 // user routes ex: localhost/api/users
 app.use("/api/users", userRoutes);
+
+app.use("/api/rooms", roomRoutes);
 
 app.use((req, res, next) => {
   // middleware for unsupported routes

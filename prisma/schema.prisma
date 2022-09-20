@@ -22,7 +22,7 @@ model Room {
 
 model User {
   id String @id @default(auto()) @map("_id") @db.ObjectId
-  uid String
+  uid String @unique
   createdAt DateTime @default(now())
   email String @unique
   displayName String
