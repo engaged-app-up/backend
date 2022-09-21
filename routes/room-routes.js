@@ -4,6 +4,6 @@ const fbAuth = require('../middleware/fbAuth');
 // controller
 const roomController = require('../controllers/room-controller');
 
-router.get('/create', fbAuth, roomController.createRoom);
+router.post('/create', fbAuth, roomController.createRoom);
 
 module.exports = router;
