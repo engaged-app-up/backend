@@ -92,4 +92,25 @@ const leaveRoom = async (req, res, next) => {
     //todo
 };
 
-module.exports = {createRoom, deleteRoom, joinRoom, leaveRoom};
+const getRoomByUid= async (req, res, next) => {
+    //uid from route params
+    const uid = req.params.uid;
+    let user;
+    try {
+        user = await prisma.user.findUnique({
+            where: {
+                uid: uid
+            },
+            include: {
+                rooms: true
+            }
+        })
+        console.log(user);
+    } catch (error) {
+        return next(new HttpError('Failed to find user', 500));
+    }
+
+    res.json(user.rooms);
+}
+
+module.exports = {createRoom, deleteRoom, joinRoom, leaveRoom, getRoomByUid};
