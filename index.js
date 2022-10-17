@@ -43,7 +43,7 @@ app.use((req, res, next) => {
 
 //error handler
 app.use((err, req, res, next) => {
-  res.json({ error: `${err.message}`, statusCode: `${err.statusCode}` });
+  res.status(err.statusCode).json({ error: `${err.message}`, statusCode: `${err.statusCode}` });
 });
 
 app.use(Sentry.Handlers.errorHandler());

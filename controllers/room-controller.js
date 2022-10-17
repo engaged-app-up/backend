@@ -7,6 +7,7 @@ const { v4: uuidv4 } = require('uuid');
 const createRoom = async (req, res, next) => {
     console.log(req.headers.uid);
     const {name, description} = req.body;
+    console.log(req.body);
 
     //get user trying to create room.
     let user;
@@ -17,7 +18,7 @@ const createRoom = async (req, res, next) => {
             }
         })
     } catch (error) {
-        return next(new HttpError('Cannot create room. User not found.', 500))
+        return next(new HttpError('Cannot create room. User not found.', 404))
     }
 
     let room;
@@ -85,7 +86,7 @@ const joinRoom = async (req, res, next) => {
         console.log(error)
         return next(new HttpError('failed', 500));
     }
-    res.json({msg: 'join successful'});
+    res.status(202).json(room);
 };
 
 const leaveRoom = async (req, res, next) => {
@@ -95,6 +96,7 @@ const leaveRoom = async (req, res, next) => {
 const getRoomByUid= async (req, res, next) => {
     //uid from route params
     const uid = req.params.uid;
+    let rooms = [];
     let user;
     try {
         user = await prisma.user.findUnique({
@@ -102,15 +104,15 @@ const getRoomByUid= async (req, res, next) => {
                 uid: uid
             },
             include: {
+                ownedRooms: true,
                 rooms: true
             }
         })
-        console.log(user);
+        rooms = rooms.concat(...user.ownedRooms, ...user.rooms);
     } catch (error) {
         return next(new HttpError('Failed to find user', 500));
     }
-
-    res.json(user.rooms);
+    res.json(rooms);
 }
 
 module.exports = {createRoom, deleteRoom, joinRoom, leaveRoom, getRoomByUid};
