@@ -9,17 +9,16 @@ const roomRoutes = require("./routes/room-routes");
 const prisma = require("./db/prisma");
 const http = require("http");
 const server = http.createServer(app);
-const admin = require('./util/firebase-admin');
-const {getAuth} = require('firebase-admin/auth');
+const admin = require("./util/firebase-admin");
+const { getAuth } = require("firebase-admin/auth");
 
 const getUser = async () => {
   //firebase admin sdk is working! getting a user.
-  const user = await getAuth().getUserByEmail('imwaynebailey@gmail.com');
-  console.log(user.uid);
-}
+  const user = await getAuth().getUserByEmail("imwaynebailey@gmail.com");
+  console.log(user.displayName);
+};
 
 // getUser();
-
 
 // Sentry
 Sentry.init({
@@ -74,7 +73,7 @@ io.on("connection", (socket) => {
 
   socket.on("join_room", (data) => {
     socket.join(data);
-    console.log(`User with ID: ${socket.id} joined room: ${data}`)
+    console.log(`User with ID: ${socket.id} joined room: ${data}`);
   });
 
   socket.on("send_message", (data) => {
@@ -83,5 +82,5 @@ io.on("connection", (socket) => {
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
-  })
+  });
 });
