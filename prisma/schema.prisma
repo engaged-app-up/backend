@@ -33,3 +33,4 @@ model User {
   roomIds String[] @db.ObjectId
   rooms Room[] @relation(name: "roomMembers", fields: [roomIds], references: [id])
 }
+
