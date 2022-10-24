@@ -8,6 +8,7 @@ const HttpError = require('../util/http-error');
 
 router.post('/create', fbAuth, roomController.createRoom);
 router.post('/join', fbAuth, roomController.joinRoom);
+router.put('/leave/:uuid', fbAuth, roomController.leaveRoom);
 router.get('/user/:uid/rooms', fbAuth, roomController.getRoomByUid);
 router.get('/testing', fbAuth, async (req, res, next) => {
     let user;

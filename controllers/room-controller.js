@@ -45,12 +45,13 @@ const deleteRoom = async (req, res, next) => {
 
 const joinRoom = async (req, res, next) => {
     //get user requesting to join
+    const roomUuid = req.body.roomUuid;
     let user;
     try {
         user = await prisma.user.findUnique({
             where: {
                 uid: req.headers.uid
-            }
+            },
         })
     } catch (error) {
         console.log(error)
@@ -61,12 +62,17 @@ const joinRoom = async (req, res, next) => {
     try {
         room = await prisma.room.findUnique({
             where: {
-                id: req.body.roomId
+                uuid: roomUuid
             }
         })
     } catch (error) {
         console.log(error)
         return next(new HttpError('Failed to find room', 500));
+    }
+
+    // is user already a member of the room?
+    if (room.memberIds.includes(user.id) || room.creatorId === user.id) {
+        return next(new HttpError(`You are already a member of this room.`, 409));
     }
 
     try {
@@ -84,13 +90,43 @@ const joinRoom = async (req, res, next) => {
         })
     } catch (error) {
         console.log(error)
-        return next(new HttpError('failed', 500));
+        return next(new HttpError('Join room failed.', 500));
     }
     res.status(202).json(room);
 };
 
 const leaveRoom = async (req, res, next) => {
-    //todo
+    const uuid = req.params.uuid;
+    let user;
+    try {
+        user = await prisma.user.findUnique({
+            where: {
+                uid: req.headers.uid
+            }
+        })
+    } catch(error) {
+        return next(new HttpError('Server failed to get user.', 500))
+    }
+
+    let room;
+    try {
+        room = await prisma.room.update({
+            where: {
+                uuid: uuid
+            },
+            data: {
+                members: {
+                    disconnect: {
+                       id: user.id 
+                    }
+                }
+            }
+        })
+    } catch(error) {
+        return next(new HttpError('Server failed to get room.', 500));
+    }
+
+    res.status(202).json({msg: 'User left room.'});
 };
 
 const getRoomByUid= async (req, res, next) => {

@@ -71,7 +71,7 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
-
+  
   socket.on("join_room", (data) => {
     socket.join(data);
     console.log(`User with ID: ${socket.id} joined room: ${data}`)
@@ -85,3 +85,5 @@ io.on("connection", (socket) => {
     console.log("User Disconnected", socket.id);
   })
 });
+
+// console.log(Array.from(io.sockets.sockets).map(socket => socket)); //array of all sockets. 
