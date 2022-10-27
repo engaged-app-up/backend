@@ -7,7 +7,9 @@ const { v4: uuidv4 } = require('uuid');
 const createRoom = async (req, res, next) => {
     console.log(req.headers.uid);
     const {name, description} = req.body;
-    console.log(req.body);
+    if (!name || !description) {
+        return next(new HttpError('Failed to create room. You must provide a room name and description.', 400));
+    }
 
     //get user trying to create room.
     let user;
@@ -54,7 +56,6 @@ const joinRoom = async (req, res, next) => {
             },
         })
     } catch (error) {
-        console.log(error)
         return next(new HttpError('Failed to find user', 500));
     }
 
@@ -66,7 +67,6 @@ const joinRoom = async (req, res, next) => {
             }
         })
     } catch (error) {
-        console.log(error)
         return next(new HttpError('Failed to find room', 500));
     }
 
@@ -89,7 +89,6 @@ const joinRoom = async (req, res, next) => {
             }
         })
     } catch (error) {
-        console.log(error)
         return next(new HttpError('Join room failed.', 500));
     }
     res.status(202).json(room);
@@ -168,7 +167,6 @@ const getRoomDetails= async (req, res, next) => {
     } catch (error) {
         return next(new HttpError('Failed to find room.', 500));
     }
-    console.log(room);
     res.json(room);
 }
 
