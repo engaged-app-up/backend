@@ -73,12 +73,16 @@ io.on("connection", (socket) => {
   
   socket.on("join_room", (data) => {
     socket.join(data);
+    const userList = io.sockets.adapter.rooms.get(data);
+    console.log(userList);
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
+    io.in(data).emit("update_active_users", userList);
   });
 
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
   });
+  
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
@@ -86,3 +90,5 @@ io.on("connection", (socket) => {
 });
 
 // console.log(Array.from(io.sockets.sockets).map(socket => socket)); //array of all sockets. 
+// const clients = io.sockets.adapter.rooms;
+// console.log(clients);
