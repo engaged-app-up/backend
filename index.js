@@ -70,19 +70,27 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
-  
+
   socket.on("join_room", (data) => {
     socket.join(data);
     const userList = io.sockets.adapter.rooms.get(data);
     console.log(userList);
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
-    io.in(data).emit("update_active_users", userList);
+    io.in(data).emit("get_active_users", Array.from(userList));
   });
+
+  socket.on("leave_room", (data) => {
+    socket.leave(data);
+    const userList = io.sockets.adapter.rooms.get(data);
+    if (userList) {
+      io.in(data).emit("get_active_users", Array.from(userList));
+    }
+  })
 
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
   });
-  
+
 
   socket.on("disconnect", () => {
     console.log("User Disconnected", socket.id);
