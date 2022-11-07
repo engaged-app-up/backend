@@ -70,20 +70,28 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
-
-  socket.on("join_room", (data) => {
+  socket.on('set_user_id', (data) => {
+    socket.userId = data;
+    console.log(`Id for ${socket.id}: ${socket.userId}`);
+  })
+  socket.on("join_room", async (data) => {
     socket.join(data);
-    const userList = io.sockets.adapter.rooms.get(data);
-    console.log(userList);
+    let activeUsers = await io.in(data).fetchSockets();
+    activeUsers = await activeUsers.map(client => {
+      return {socketId: client.id, userId: client.userId};
+    })
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
-    io.in(data).emit("get_active_users", Array.from(userList));
+    io.in(data).emit("get_active_users", activeUsers);
   });
 
-  socket.on("leave_room", (data) => {
+  socket.on("leave_room", async (data) => {
     socket.leave(data);
-    const userList = io.sockets.adapter.rooms.get(data);
-    if (userList) {
-      io.in(data).emit("get_active_users", Array.from(userList));
+    let activeUsers = await io.in(data).fetchSockets();
+    activeUsers = await activeUsers.map(client => {
+      return {socketId: client.id, userId: client.userId};
+    })
+    if (activeUsers) {
+      io.in(data).emit("get_active_users", activeUsers);
     }
   })
 
