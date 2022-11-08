@@ -70,17 +70,22 @@ const io = require("socket.io")(server, {
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
+
   socket.on('set_user_id', (data) => {
     socket.userId = data;
     console.log(`Id for ${socket.id}: ${socket.userId}`);
   })
+
   socket.on("join_room", async (data) => {
     socket.join(data);
     let activeUsers = await io.in(data).fetchSockets();
     activeUsers = await activeUsers.map(client => {
-      return {socketId: client.id, userId: client.userId};
+      return { socketId: client.id, userId: client.userId };
     })
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
+    if (activeUsers.length > 0) {
+      io.emit('room_set_active', {room: data, count: activeUsers.length});
+    }
     io.in(data).emit("get_active_users", activeUsers);
   });
 
@@ -88,10 +93,23 @@ io.on("connection", (socket) => {
     socket.leave(data);
     let activeUsers = await io.in(data).fetchSockets();
     activeUsers = await activeUsers.map(client => {
-      return {socketId: client.id, userId: client.userId};
+      return { socketId: client.id, userId: client.userId };
     })
     if (activeUsers) {
       io.in(data).emit("get_active_users", activeUsers);
+    } 
+
+    if (activeUsers.length == 0) {
+      io.emit('room_set_inactive', data);
+    }
+  })
+
+  socket.on("is_room_active", async (data) => {
+    const room = data;
+    let roomInfo = await io.in(room).fetchSockets();
+    if (roomInfo.length > 0) {
+      io.emit("room_set_active", room);
+      console.log('sent active!')
     }
   })
 
