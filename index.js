@@ -124,6 +124,4 @@ io.on("connection", (socket) => {
   });
 });
 
-// console.log(Array.from(io.sockets.sockets).map(socket => socket)); //array of all sockets. 
-// const clients = io.sockets.adapter.rooms;
-// console.log(clients);
+
