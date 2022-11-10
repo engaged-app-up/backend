@@ -97,6 +97,7 @@ io.on("connection", (socket) => {
     })
     if (activeUsers) {
       io.in(data).emit("get_active_users", activeUsers);
+      io.emit('room_set_active', {room: data, count: activeUsers.length});
     } 
 
     if (activeUsers.length == 0) {
@@ -108,7 +109,7 @@ io.on("connection", (socket) => {
     const room = data;
     let roomInfo = await io.in(room).fetchSockets();
     if (roomInfo.length > 0) {
-      io.emit("room_set_active", room);
+      io.emit("room_set_active", {room: data, count: roomInfo.length});
       console.log('sent active!')
     }
   })
