@@ -51,6 +51,22 @@ const getDbId = async (req, res, next) => {
 
     res.json({id: user.id});
 }
+const getDbUser = async (req, res, next) => {
+    const uid = req.headers.uid;
+    let user;
+    try {
+        user = await prisma.user.findUnique({
+            where: {
+                uid: uid
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        return next(new HttpError('User not found', 404));
+    }
+
+    res.json(user);
+}
 
 
-module.exports = { getUsers, createUser, getDbId };
+module.exports = { getUsers, createUser, getDbId, getDbUser };
