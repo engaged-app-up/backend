@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
   })
 
   socket.on("join_room", async (data) => {
-    socket.join(data);
+    await socket.join(data);
     let activeUsers = await io.in(data).fetchSockets();
     activeUsers = await activeUsers.map(client => {
       return { socketId: client.id, userId: client.userId };

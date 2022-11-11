@@ -8,6 +8,8 @@ router.get('/', fbAuth, userController.getUsers);
 
 router.get('/:uid/dbId', fbAuth, userController.getDbId);
 
+router.get('/dbuser', fbAuth, userController.getDbUser);
+
 router.post('/auth', userController.createUser);
 
 module.exports = router;
