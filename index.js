@@ -114,6 +114,10 @@ io.on("connection", (socket) => {
     }
   })
 
+  socket.on('room_state_change', (data) => {
+    io.in(data.room).emit("set_room_state", data.isRoomModeGame);
+  })
+
   socket.on("send_message", (data) => {
     socket.to(data.room).emit("receive_message", data);
   });
