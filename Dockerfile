@@ -18,7 +18,7 @@ COPY . .
 
 RUN npm install prisma
 RUN npx prisma generate
-
+RUN npm run build
 
 
 # If you are building your code for production
