@@ -50,7 +50,7 @@ app.use(Sentry.Handlers.errorHandler());
 prisma
   .$connect()
   .then(() => {
-    const port = process.env.PORT || 8080;
+    const port = process.env.PORT || 3001;
     server.listen(port, () => {
       console.log(`Running on port ${port}`);
     });
