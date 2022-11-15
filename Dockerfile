@@ -18,7 +18,7 @@ COPY . .
 
 RUN npm install prisma
 RUN npx prisma generate
-
+EXPOSE 3001
 
 
 # If you are building your code for production
