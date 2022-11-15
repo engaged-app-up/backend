@@ -6,6 +6,7 @@ const app = express();
 const Sentry = require("@sentry/node");
 const userRoutes = require("./routes/user-routes");
 const roomRoutes = require("./routes/room-routes");
+const gameroutes = require('./routes/game-routes');
 const prisma = require("./db/prisma");
 const http = require("http");
 const server = http.createServer(app);
@@ -26,6 +27,16 @@ Sentry.init({
 });
 app.use(Sentry.Handlers.requestHandler());
 
+// socket.io
+const io = require("socket.io")(server, {
+  cors: {
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST"],
+  },
+});
+
+app.set('socketio', io);
+
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -34,6 +45,8 @@ app.use(express.json());
 app.use("/api/users", userRoutes);
 
 app.use("/api/rooms", roomRoutes);
+
+app.use("/api/game", gameroutes);
 
 app.use((req, res, next) => {
   // middleware for unsupported routes
@@ -60,13 +73,6 @@ prisma
   });
 
 //socket io
-
-const io = require("socket.io")(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"],
-  },
-});
 
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
