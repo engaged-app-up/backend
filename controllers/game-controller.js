@@ -19,6 +19,7 @@ const getQuestions = async (req, res, next) => {
 }
 
 const setIsGameActive = async (req, res, next) => {
+    const io = req.app.get('socketio');
     let uid = req.headers.uid;
 
     let uuid = req.body.uuid;

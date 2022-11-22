@@ -73,7 +73,7 @@ prisma
   });
 
 //socket io
-
+const gameInProgress = [];
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -90,24 +90,29 @@ io.on("connection", (socket) => {
     })
     console.log(`User with ID: ${socket.id} joined room: ${data}`);
     if (activeUsers.length > 0) {
-      io.emit('room_set_active', {room: data, count: activeUsers.length});
+      io.emit('room_set_active', { room: data, count: activeUsers.length });
     }
     io.in(data).emit("get_active_users", activeUsers);
   });
 
-  socket.on("leave_room", async (data) => {
-    socket.leave(data);
-    let activeUsers = await io.in(data).fetchSockets();
+  socket.on("leave_room", async ({ room, isHost }) => {
+    socket.leave(room);
+    console.log('is host ' + isHost);
+    let activeUsers = await io.in(room).fetchSockets();
     activeUsers = await activeUsers.map(client => {
       return { socketId: client.id, userId: client.userId };
     })
     if (activeUsers) {
-      io.in(data).emit("get_active_users", activeUsers);
-      io.emit('room_set_active', {room: data, count: activeUsers.length});
-    } 
+      io.in(room).emit("get_active_users", activeUsers);
+      io.emit('room_set_active', { room: room, count: activeUsers.length });
+    }
 
     if (activeUsers.length == 0) {
-      io.emit('room_set_inactive', data);
+      io.emit('room_set_inactive', room);
+    }
+
+    if (isHost) {
+      io.in(room).emit('set_room_state', false);
     }
   })
 
@@ -115,12 +120,26 @@ io.on("connection", (socket) => {
     const room = data;
     let roomInfo = await io.in(room).fetchSockets();
     if (roomInfo.length > 0) {
-      io.emit("room_set_active", {room: data, count: roomInfo.length});
+      io.emit("room_set_active", { room: data, count: roomInfo.length });
       console.log('sent active!')
     }
   })
 
   socket.on('room_state_change', (data) => {
+    if (data.isRoomModeGame) {
+      let game = {
+        room: data.room,
+        hostSocket: socket.id,
+        hostUserId: socket.userId
+      }
+      gameInProgress.push(game);
+      console.log(gameInProgress);
+    } else {
+      gameInProgress.splice(gameInProgress.findIndex(game => {
+        return game.hostUserId == socket.userId && game.room == data.room;
+      }), 1)
+    }
+    console.log(data, 'room state change');
     io.in(data.room).emit("set_room_state", data.isRoomModeGame);
   })
 
@@ -129,7 +148,32 @@ io.on("connection", (socket) => {
   });
 
 
-  socket.on("disconnect", () => {
+  // GAME SOCKET LOGIC
+
+  socket.on('set_game_state', ({ room, gameState }) => {
+    io.in(room).emit('set_game_state', gameState);
+  })
+
+  socket.on('next_player', ({ room, game }) => {
+    io.in(room).emit('set_game_state', game);
+  })
+
+  socket.on('next_round', ({ room, game }) => {
+    io.in(room).emit('set_game_state', game)
+  })
+
+  socket.on('stop_game', (data) => {
+    gameInProgress.splice(gameInProgress.findIndex(game => {
+      return game.room == data.room;
+    }), 1)
+    console.log('game in progress list', gameInProgress);
+    io.in(data.room).emit('set_game_state', data.game);
+  })
+
+
+  // SOCKET D/C
+
+  socket.on("disconnect", (data) => {
     console.log("User Disconnected", socket.id);
   });
 });
