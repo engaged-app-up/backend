@@ -30,7 +30,7 @@ app.use(Sentry.Handlers.requestHandler());
 // socket.io
 const io = require("socket.io")(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://engaged-4979a.web.app",
     methods: ["GET", "POST"],
   },
 });
@@ -73,7 +73,7 @@ prisma
   });
 
 //socket io
-const gameInProgress = [];
+const roomStateGame = [];
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
@@ -132,15 +132,26 @@ io.on("connection", (socket) => {
         hostSocket: socket.id,
         hostUserId: socket.userId
       }
-      gameInProgress.push(game);
-      console.log(gameInProgress);
+      roomStateGame.push(game);
+      console.log(roomStateGame);
     } else {
-      gameInProgress.splice(gameInProgress.findIndex(game => {
+      roomStateGame.splice(roomStateGame.findIndex(game => {
         return game.hostUserId == socket.userId && game.room == data.room;
       }), 1)
     }
     console.log(data, 'room state change');
     io.in(data.room).emit("set_room_state", data.isRoomModeGame);
+  })
+
+  socket.on("get_room_state", (data) => {
+    let roomFound = false;
+    roomStateGame.forEach(game => {
+      if (game.room == data.room) {
+        roomFound = true;
+      }
+    })
+    console.log(roomFound)
+    io.to(socket.id).emit("set_room_state", roomFound);
   })
 
   socket.on("send_message", (data) => {
@@ -163,10 +174,10 @@ io.on("connection", (socket) => {
   })
 
   socket.on('stop_game', (data) => {
-    gameInProgress.splice(gameInProgress.findIndex(game => {
+    roomStateGame.splice(roomStateGame.findIndex(game => {
       return game.room == data.room;
     }), 1)
-    console.log('game in progress list', gameInProgress);
+    console.log('game in progress list', roomStateGame);
     io.in(data.room).emit('set_game_state', data.game);
   })
 
