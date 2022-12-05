@@ -31,6 +31,7 @@ app.use(Sentry.Handlers.requestHandler());
 const io = require("socket.io")(server, {
   cors: {
     origin: "https://engaged-4979a.web.app",
+    // origin: "http://localhost:3000",
     methods: ["GET", "POST"],
   },
 });
@@ -73,7 +74,7 @@ prisma
   });
 
 //socket io
-const roomStateGame = [];
+const roomStateGame = []; //games
 io.on("connection", (socket) => {
   console.log(`User connected: ${socket.id}`);
 
