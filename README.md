@@ -18,7 +18,7 @@ ShaunR23](https://github.com/ShaunR23)
  The idea was to have a small game to play when on a remote teams/zoom call. When the host starts an icebreakers game, the application determines all **active** users in the room and excludes users that are *members* of the room but are offline. The host controls when to move on to the next user. If all users have been selected for a particular question, a new question gets pulled and will continue to iterate over the active users. 
 
  # Tech Stack
- - MondoDB
+ - MongoDB
  - Express/Node 
  - React (Frontend)
  - Socket.IO
